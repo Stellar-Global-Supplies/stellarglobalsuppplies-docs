@@ -37,7 +37,7 @@ export default function Home() {
   return (
     <>
       <div className="page-header">
-        <h1 className="page-title">Welcome to GitDocs</h1>
+        <h1 className="page-title">Welcome to Stellar Docs</h1>
         <p className="page-subtitle">
           Auto-generated documentation from your GitHub repositories
         </p>

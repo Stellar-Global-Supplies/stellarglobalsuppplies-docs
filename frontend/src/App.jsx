@@ -38,8 +38,8 @@ function Topbar({ onSync, syncing, syncStatus }) {
   return (
     <header className="topbar">
       <Link to="/" className="topbar-logo">
-        <div className="topbar-logo-icon">GD</div>
-        GitDocs
+        <div className="topbar-logo-icon">SD</div>
+        Stellar Docs
       </Link>
 
       <div className="topbar-search">
