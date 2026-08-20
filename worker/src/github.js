@@ -1,11 +1,9 @@
 export async function getGithubToken(env) {
-  // Try Secrets Store binding first
   try {
     const token = await env.GITHUB_TOKEN.get();
     if (token) return token;
   } catch {}
 
-  // Fallback: direct Worker secret (plain string via `wrangler secret put`)
   if (env.GITHUB_TOKEN && typeof env.GITHUB_TOKEN === 'string') {
     return env.GITHUB_TOKEN;
   }
@@ -39,7 +37,6 @@ export async function githubFetch(env, endpoint, options = {}) {
 }
 
 export async function fetchAllRepos(env) {
-  const token = await getGithubToken(env);
   let page = 1;
   const all = [];
 
@@ -56,13 +53,18 @@ export async function fetchAllRepos(env) {
   return all;
 }
 
-export async function fetchReadme(env, owner, repo, branch = 'HEAD') {
+export async function fetchReadme(env, owner, repo) {
   try {
-    // Try to get the raw README content
     const data = await githubFetch(env, `/repos/${owner}/${repo}/readme`);
-    const content = atob(data.content.replace(/\n/g, ''));
+
+    // ✅ Fix: atob() returns a binary string — use TextDecoder for proper UTF-8
+    // This prevents â€™ â€œ â€" etc. from appearing in rendered markdown
+    const binary = atob(data.content.replace(/\n/g, ''));
+    const bytes  = Uint8Array.from(binary, c => c.charCodeAt(0));
+    const content = new TextDecoder('utf-8').decode(bytes);
+
     return { content, sha: data.sha, path: data.path };
-  } catch (err) {
+  } catch {
     return null;
   }
 }
