@@ -30,7 +30,7 @@ async function verifySignature(request, secret, body) {
 export async function handleWebhook(request, env) {
   const body = await request.text();
 
-  const webhookSecret = env.DOCS_WEBHOOK_TOKEN;
+  const webhookSecret = await env.DOCS_WEBHOOK_TOKEN.get();
 
   if (webhookSecret) {
     const valid = await verifySignature(request, webhookSecret, body);
@@ -85,6 +85,7 @@ async function syncSingleRepo(env, repoData) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     ON CONFLICT(github_id) DO UPDATE SET
       full_name = excluded.full_name,
+      name = excluded.name,
       description = excluded.description,
       default_branch = excluded.default_branch,
       stars = excluded.stars,

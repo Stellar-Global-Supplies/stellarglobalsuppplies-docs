@@ -1,8 +1,16 @@
-export function getGithubToken(env) {
-  // Using secrets_store_secrets binding (wrangler >=4.0.0 direct binding style)
-  const token = env.GITHUB_TOKEN;
-  if (!token) throw new Error('GITHUB_TOKEN not found in secret store');
-  return token;
+export async function getGithubToken(env) {
+  // Try Secrets Store binding first
+  try {
+    const token = await env.GITHUB_TOKEN.get();
+    if (token) return token;
+  } catch {}
+
+  // Fallback: direct Worker secret (plain string via `wrangler secret put`)
+  if (env.GITHUB_TOKEN && typeof env.GITHUB_TOKEN === 'string') {
+    return env.GITHUB_TOKEN;
+  }
+
+  throw new Error('GITHUB_TOKEN not found');
 }
 
 export async function githubFetch(env, endpoint, options = {}) {
