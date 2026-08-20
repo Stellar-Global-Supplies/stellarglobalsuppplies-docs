@@ -1,0 +1,7 @@
+name = "github-docs-frontend"
+pages_build_output_dir = "dist"
+
+[env.production]
+routes = [
+  { pattern = "docs.stellarglobalsupplies.com/*", zone_name = "stellarglobalsupplies.com" }
+]
